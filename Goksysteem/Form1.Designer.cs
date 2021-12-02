@@ -1,4 +1,6 @@
 ﻿
+using System.Diagnostics.Eventing.Reader;
+
 namespace Goksysteem
 {
     partial class Form1
@@ -12,15 +14,45 @@ namespace Goksysteem
         /// Clean up any resources being used.
         /// </summary>
         /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        protected override void Dispose(bool disposing)
+        protected void OnAuthenticate(EventArgs e)
         {
-            if (disposing && (components != null))
+            AuthenticationEventHandler authHandler = Authenticate;
+            if (authHandler != null)
             {
-                components.Dispose();
+                foreach (AuthenticationEventHandler handler in authHandler.GetInvocationList())
+                {
+                    handler.BeginInvoke(this, e, new AsyncCallback(Callback), handler);
+                }
             }
-            base.Dispose(disposing);
         }
-
+        
+        void Callback(IAsyncResult ar)
+        {
+            AuthenticationEventHandler d = (AuthenticationEventHandler)ar.AsyncState;
+            if (d.EndInvoke(ar))
+            {
+                OnLoggedIn(new EventArgs());
+            }
+            else
+            {
+                OnLoggedError(new EventArgs());
+            }
+        }
+        
+        public event AuthenticationEventHandler Authenticate;
+        public event EventHandler LoggedIn;
+        public event EventHandler LoggedError:
+        public delegate bool AuthenticationEventHandler(object sender, EventArgs e);
+        public string Username 
+        {
+            get { return UserName.Text; }
+        }
+        public string Passwordtext
+        {
+            get { return Password.Text; }
+        }
+        
+        
         #region Windows Form Designer generated code
 
         /// <summary>
