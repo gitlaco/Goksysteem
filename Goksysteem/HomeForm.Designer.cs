@@ -79,6 +79,7 @@ namespace Goksysteem
             this.lbLogo.Size = new System.Drawing.Size(171, 58);
             this.lbLogo.TabIndex = 8;
             this.lbLogo.Text = "(Logo)";
+            this.lbLogo.Click += new System.EventHandler(this.lbLogo_Click);
             // 
             // HomeForm
             // 
